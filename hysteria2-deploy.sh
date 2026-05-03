@@ -31,10 +31,10 @@ read -p "请输入端口跳跃范围起始 [默认20000]: " HOP_START
 HOP_START=${HOP_START:-20000}
 read -p "请输入端口跳跃范围结束 [默认40000]: " HOP_END
 HOP_END=${HOP_END:-40000}
-read -p "请输入下行带宽(mbps) [默认200]: " BW_DOWN
-BW_DOWN=${BW_DOWN:-200}
-read -p "请输入上行带宽(mbps) [默认100]: " BW_UP
-BW_UP=${BW_UP:-100}
+read -p "请输入下行带宽(mbps) [默认900]: " BW_DOWN
+BW_DOWN=${BW_DOWN:-900}
+read -p "请输入上行带宽(mbps) [默认900]: " BW_UP
+BW_UP=${BW_UP:-900}
 
 # 自动生成密码
 if [ -z "$PASSWORD" ]; then
@@ -147,11 +147,11 @@ fi
 echo -e "${YELLOW}[5/5] 生成客户端订阅链接...${NC}"
 
 # v2rayN 格式的 Hysteria2 分享链接
-# 格式: hysteria2://password@host:port?sni=domain&insecure=0#name
-SUBSCRIBE_LINK="hysteria2://${PASSWORD}@${DOMAIN}:${PORT}?sni=${DOMAIN}&insecure=0#Hysteria2-${DOMAIN}"
+# 格式: hysteria2://password@host:port?sni=domain&insecure=0&up=900&down=900#name
+SUBSCRIBE_LINK="hysteria2://${PASSWORD}@${DOMAIN}:${PORT}?sni=${DOMAIN}&insecure=0&up=${BW_UP}&down=${BW_DOWN}#Hysteria2-${DOMAIN}"
 
 # 带端口跳跃的链接（mport参数）
-SUBSCRIBE_LINK_HOP="hysteria2://${PASSWORD}@${DOMAIN}:${PORT}?sni=${DOMAIN}&insecure=0&mport=${HOP_START}-${HOP_END}#Hysteria2-PortHop-${DOMAIN}"
+SUBSCRIBE_LINK_HOP="hysteria2://${PASSWORD}@${DOMAIN}:${PORT}?sni=${DOMAIN}&insecure=0&mport=${HOP_START}-${HOP_END}&up=${BW_UP}&down=${BW_DOWN}#Hysteria2-PortHop-${DOMAIN}"
 
 # 生成 Base64 订阅内容
 SUBSCRIBE_CONTENT=$(echo -e "${SUBSCRIBE_LINK}\n${SUBSCRIBE_LINK_HOP}" | base64 -w 0)
@@ -202,8 +202,8 @@ server: ${DOMAIN}:${HOP_START}-${HOP_END}
 auth: ${PASSWORD}
 
 bandwidth:
-  up: 50 mbps
-  down: 100 mbps
+  up: 900 mbps
+  down: 900 mbps
 
 tls:
   sni: ${DOMAIN}
