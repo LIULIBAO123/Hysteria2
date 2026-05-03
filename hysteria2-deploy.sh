@@ -147,11 +147,14 @@ fi
 echo -e "${YELLOW}[5/5] 生成客户端订阅链接...${NC}"
 
 # v2rayN 格式的 Hysteria2 分享链接
-# 格式: hysteria2://password@host:port?sni=domain&insecure=0&up=900&down=900#name
-SUBSCRIBE_LINK="hysteria2://${PASSWORD}@${DOMAIN}:${PORT}?sni=${DOMAIN}&insecure=0&up=${BW_UP}&down=${BW_DOWN}#Hysteria2-${DOMAIN}"
+# 官方格式: hysteria2://auth@hostname[:port]/?[key=value]&[key=value]...
+# 注意：密码需要URL编码，端口后必须有斜杠，不包含带宽参数
+ENCODED_PASSWORD=$(python3 -c "import urllib.parse; print(urllib.parse.quote('${PASSWORD}', safe=''))" 2>/dev/null || echo "${PASSWORD}")
+
+SUBSCRIBE_LINK="hysteria2://${ENCODED_PASSWORD}@${DOMAIN}:${PORT}/?sni=${DOMAIN}&insecure=0#Hysteria2-${DOMAIN}"
 
 # 带端口跳跃的链接（mport参数）
-SUBSCRIBE_LINK_HOP="hysteria2://${PASSWORD}@${DOMAIN}:${PORT}?sni=${DOMAIN}&insecure=0&mport=${HOP_START}-${HOP_END}&up=${BW_UP}&down=${BW_DOWN}#Hysteria2-PortHop-${DOMAIN}"
+SUBSCRIBE_LINK_HOP="hysteria2://${ENCODED_PASSWORD}@${DOMAIN}:${PORT}/?sni=${DOMAIN}&insecure=0&mport=${HOP_START}-${HOP_END}#Hysteria2-PortHop-${DOMAIN}"
 
 # 生成 Base64 订阅内容
 SUBSCRIBE_CONTENT=$(echo -e "${SUBSCRIBE_LINK}\n${SUBSCRIBE_LINK_HOP}" | base64 -w 0)
